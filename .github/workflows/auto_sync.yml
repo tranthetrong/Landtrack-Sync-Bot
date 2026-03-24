@@ -2,22 +2,28 @@ name: Tu dong copy code moi 15 phut
 
 on:
   schedule:
-    - cron: '*/15 * * * *' # Cu 15 phut no se tu kiem tra va copy code 1 lan
-  workflow_dispatch: # Nut bam de ban tu chay ngay lap tuc neu muon
+    - cron: '*/15 * * * *'
+  workflow_dispatch: # Nut bam de ban chay ngay lap tuc
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
       - name: Copy code tu A sang B
+        env:
+          MY_TOKEN: ${{ secrets.SYNC_TOKEN }}
         run: |
           git config --global user.email "trongtt.landtrack@gmail.com"
           git config --global user.name "Sync Bot"
           
-          # Lay code tu kho LandTrack_V2 (Tai khoan A)
-          git clone https://github.com/tranthetrong/LandTrack_V2.git temp_repo
+          # 1. Lay code tu kho LandTrack_V2 (Dung Token de xac thuc quyen doc)
+          # Luu y: Token nay phai co quyen doc kho cua Tai khoan A
+          git clone https://x-access-token:${MY_TOKEN}@github.com/tranthetrong/LandTrack_V2.git temp_repo
+          
           cd temp_repo
           
-          # Day sang kho Landtrack (Tai khoan B)
-          git remote add destination https://x-access-token:${{ secrets.SYNC_TOKEN }}@github.com/trongtt-landtrack/Landtrack.git
+          # 2. Day sang kho Landtrack (Tai khoan B)
+          git remote add destination https://x-access-token:${MY_TOKEN}@github.com/trongtt-landtrack/Landtrack.git
+          
+          # 3. Thuc hien ghi de code sang nhanh main
           git push destination main:main --force
