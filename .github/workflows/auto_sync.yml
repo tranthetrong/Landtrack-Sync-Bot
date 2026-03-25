@@ -1,9 +1,8 @@
-name: Tu dong copy code moi 15 phut
+name: Copy code sang Tai khoan B (Thu cong)
 
 on:
-  schedule:
-    - cron: '*/15 * * * *'
-  workflow_dispatch: # Nut bam de ban chay ngay lap tuc
+  # Da loai bo phan schedule (15 phut) theo yeu cau cua ban
+  workflow_dispatch: # Dong nay cho phep ban bam nut "Run workflow" de chay thu cong
 
 jobs:
   sync:
@@ -16,8 +15,7 @@ jobs:
           git config --global user.email "trongtt.landtrack@gmail.com"
           git config --global user.name "Sync Bot"
           
-          # 1. Lay code tu kho LandTrack_V2 (Dung Token de xac thuc quyen doc)
-          # Luu y: Token nay phai co quyen doc kho cua Tai khoan A
+          # 1. Lay code tu kho LandTrack_V2 (Tai khoan A)
           git clone https://x-access-token:${MY_TOKEN}@github.com/tranthetrong/LandTrack_V2.git temp_repo
           
           cd temp_repo
