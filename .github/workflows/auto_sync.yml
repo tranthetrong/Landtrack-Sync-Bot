@@ -1,8 +1,8 @@
 name: Copy code sang Tai khoan B (Thu cong)
 
 on:
-  # Da loai bo phan schedule (15 phut) theo yeu cau cua ban
-  workflow_dispatch: # Dong nay cho phep ban bam nut "Run workflow" de chay thu cong
+  # Chỉ cho phép chạy thủ công bằng cách bấm nút "Run workflow" trong tab Actions
+  workflow_dispatch: 
 
 jobs:
   sync:
@@ -12,16 +12,19 @@ jobs:
         env:
           MY_TOKEN: ${{ secrets.SYNC_TOKEN }}
         run: |
+          # Cấu hình danh tính cho Git
           git config --global user.email "trongtt.landtrack@gmail.com"
           git config --global user.name "Sync Bot"
           
-          # 1. Lay code tu kho LandTrack_V2 (Tai khoan A)
+          # 1. Lấy toàn bộ code từ kho LandTrack_V2 (Tài khoản A)
+          # Sử dụng x-access-token để xác thực qua Personal Access Token (PAT)
           git clone https://x-access-token:${MY_TOKEN}@github.com/tranthetrong/LandTrack_V2.git temp_repo
           
           cd temp_repo
           
-          # 2. Day sang kho Landtrack (Tai khoan B)
+          # 2. Thêm kho đích Landtrack (Tài khoản B) vào danh sách remote
           git remote add destination https://x-access-token:${MY_TOKEN}@github.com/trongtt-landtrack/Landtrack.git
           
-          # 3. Thuc hien ghi de code sang nhanh main
+          # 3. Thực hiện ghi đè code sang nhánh main của kho đích
+          # Lệnh --force sẽ đảm bảo kho B giống hệt kho A
           git push destination main:main --force
