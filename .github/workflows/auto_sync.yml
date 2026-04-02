@@ -1,41 +1,29 @@
 name: Copy code sang Tai khoan B (Thu cong)
 
 on:
-  workflow_dispatch: 
+  workflow_dispatch: # Chạy thủ công
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Copy code tu A sang B
+      - name: Sync Repository
         env:
           MY_TOKEN: ${{ secrets.SYNC_TOKEN }}
         run: |
-          echo "🔄 Bắt đầu sync từ TK A → TK B..."
+          # 1. Clone mirror từ kho A (Lấy toàn bộ branch, tag, commit)
+          # Sử dụng --mirror để đảm bảo bản sao hoàn hảo
+          git clone --mirror https://x-access-token:${MY_TOKEN}@github.com/tranthetrong/LandTrack_V2.git temp_repo
           
-          # Cấu hình Git
-          git config --global user.email "trongtt.landtrack@gmail.com"
-          git config --global user.name "Sync Bot"
+          cd temp_repo
           
-          # 1. Clone kho A
-          echo "📥 Cloning từ LandTrack_V2..."
-          git clone --bare https://x-access-token:${MY_TOKEN}@github.com/tranthetrong/LandTrack_V2.git temp_repo.git
+          # 2. Cấu hình định danh (Để tránh lỗi git)
+          git config user.email "trongtt.landtrack@gmail.com"
+          git config user.name "Sync Bot"
           
-          cd temp_repo.git
-          
-          # 2. Mirror push sang kho B (Nhanh nhất, đầy đủ nhất)
-          echo "📤 Pushing sang Landtrack..."
+          # 3. Push mirror sang kho B
+          # Lưu ý: Token này PHẢI có quyền ghi vào kho B
+          echo "📤 Đang đẩy dữ liệu sang Tài khoản B..."
           git push --mirror https://x-access-token:${MY_TOKEN}@github.com/trongtt-landtrack/Landtrack.git
           
-          PUSH_STATUS=$?
-          
-          cd ..
-          rm -rf temp_repo.git
-          
-          # 3. Verify
-          if [ $PUSH_STATUS -eq 0 ]; then
-            echo "✅ SYNC THÀNH CÔNG! Code đã được update ở kho B"
-          else
-            echo "❌ Push thất bại! Status: $PUSH_STATUS"
-            exit 1
-          fi
+          echo "✅ Hoàn thành đồng bộ!"
